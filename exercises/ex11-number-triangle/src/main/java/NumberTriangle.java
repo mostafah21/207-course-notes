@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * Exercise (Chapter: APIs, JSON, and Files) — reading data from a file into objects.
@@ -103,13 +104,9 @@ public class NumberTriangle {
    * @return the root value at the location indicated by path
    */
   public int retrieve(String path) {
-    // TODO: walk the path one character at a time, starting from this object.
-    //       For each character, move to the left child (if it is 'l') or the
-    //       right child (if it is 'r'). When the path runs out, return the root
-    //       value of wherever you ended up. An empty path means "stay here".
-    //       Hint: String#charAt(int) and String#length() are all you need for the
-    //       iterative version; a recursive version can use String#substring(1).
-    return 0;
+    if (path.isEmpty()) { return root; }
+    else if (path.charAt(0) == 'l') { return left.retrieve(path.substring(1)); }
+    else return right.retrieve(path.substring(1));
   }
 
   /**
@@ -161,30 +158,38 @@ public class NumberTriangle {
    * @return the topmost NumberTriangle object in the structure read from the file
    * @throws IOException may naturally occur if an issue reading the file occurs
    */
+
   public static NumberTriangle loadTriangle(String fname) throws IOException {
     // Open the file and get a BufferedReader object, whose methods are convenient
     // to work with when reading a file line by line. See the file-reading section
     // of the "APIs, JSON, and Files" chapter.
     BufferedReader br = Files.newBufferedReader(Path.of(fname));
 
-    // TODO: define any variables that you want to use to keep track of things
-    //       between iterations of the loop below (for example, the row of
-    //       NumberTriangle objects that you built on the previous iteration).
+    ArrayList<NumberTriangle> previousRow = null;
 
     // We need to return the top of the NumberTriangle, so here is a variable for it.
     NumberTriangle top = null;
 
     String line = br.readLine();
     while (line != null) {
+      String[] numbers = line.trim().split("\\s+");
+      ArrayList<NumberTriangle> currentRow = new ArrayList<>();
 
-      // Remove this line when you are done; it is here so that the starter code
-      // prints the contents of the file when you run it.
-      System.out.println(line);
+      for (String number : numbers) {
+        int value = Integer.parseInt(number);
+        currentRow.add(new NumberTriangle(value));
+      }
 
-      // TODO: process the line. Splitting it on spaces gives you the numbers in
-      //       this row; make a NumberTriangle for each one, then wire this row up
-      //       as the children of the previous row. Remember the aliasing: the
-      //       right child of one node is the left child of the next node over.
+      if (top == null) {
+        top = currentRow.get(0);
+      } else {
+        for (int i = 0; i < previousRow.size(); i++) {
+          previousRow.get(i).setLeft(currentRow.get(i));
+          previousRow.get(i).setRight(currentRow.get(i + 1));
+        }
+      }
+
+      previousRow = currentRow;
 
       // read the next line
       line = br.readLine();
@@ -192,6 +197,7 @@ public class NumberTriangle {
     br.close();
     return top;
   }
+
 
   /**
    * Loads the example triangle and prints its root value.
