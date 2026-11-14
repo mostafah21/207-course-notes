@@ -22,6 +22,21 @@ interface Chargeable {
   + charge() : void
 }
 
+abstract class Vehicle {
+
+}
+
+class Car {
+
+}
+
+class ElectricCar {
+
+}
+
+Car <|-- ElectricCar
+Vehicle <|-- Car
+Chargeable <|.. ElectricCar
 ' TODO: add "abstract class Vehicle", "class Car", and "class ElectricCar"
 '       (with their fields and methods), then add the arrows between all four
 '       types.

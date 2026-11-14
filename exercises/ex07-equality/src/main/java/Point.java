@@ -61,8 +61,6 @@ public class Point {
       Point oPoint = (Point) o;
       return (oPoint.x == x) & (oPoint.y == y);
     }
-    // TODO: check that o is a Point (use `instanceof`), cast it, and compare
-    //       the x and y fields.
     else return false;
   }
 
